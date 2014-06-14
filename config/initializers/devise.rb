@@ -1,0 +1,3 @@
+require "devise/orm/active_record"
+
+Devise.secret_key = 'a5406b69c6a5d0519d7c53f93f1b04d9f26dce215b71630972b323aacabf899b37ca121df472e6073d7bcb05161c9851c29a60fc3000d6c33b85ab736c46b0d5'

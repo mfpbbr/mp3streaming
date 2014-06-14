@@ -1,18 +1,20 @@
 class SongsController < ApplicationController
   def index
-    @songs = AWS::S3::Bucket.find(BUCKET).objects
+    @songs = AWS::S3::Bucket.find(BUCKET).objects.find_all do |obj|
+      obj.path.start_with?("/#{BUCKET}/#{current_user.email}/")
+    end
   end
 
   def upload
     begin
-      AWS::S3::S3Object.store(
-                        sanitize_filename(params[:mp3file].original_filename),
-                        params[:mp3file].read,
-                        BUCKET,
-                        :access => :public_read)
+      filename = sanitize_filename(params[:mp3file].original_filename)
+
+      path = File.join(current_user.email, filename)
+      AWS::S3::S3Object.store(path, params[:mp3file].tempfile, BUCKET)
       redirect_to root_path
-    rescue
+    rescue Exception => e
       render :text => "Couldn't complete the upload"
+      puts e.backtrace
     end
   end
 
